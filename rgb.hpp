@@ -19,6 +19,14 @@ public:
     void setRed(const float new_red) {red = new_red;}
     void setGreen(const float new_green) {green = new_green;}
     void setBlue(const float new_blue) {blue = new_blue;}
+    void clamp(float min, float max) {
+	red = (red < min) ? min : red;
+	red = (red > max) ? max : red;
+	green = (green < min) ? min : green;
+	green = (green > max) ? max : green;
+	blue = (blue < min) ? min : blue;
+	blue = (blue > max) ? max : blue;
+    }
     RGB& operator+=(const RGB &color) {
 	red += color.getRed();
 	green += color.getGreen();

@@ -25,8 +25,8 @@ private:
     float distance;
     Vector3D surface_normal;
 public:
-    Plane(float dist, const Vector3D& surf_norm) : 
-	distance(dist), surface_normal(surf_norm) { }
+    Plane(float dist, const Vector3D& surf_norm, const RGB& surf_color) : 
+	SceneObject(surf_color), distance(dist), surface_normal(surf_norm) { }
     float getDistance() const {return distance;}
     const Vector3D getSurfaceNormal() const {return surface_normal;}
     float intersection(const Ray &r) const {
@@ -35,7 +35,7 @@ public:
 	    return NO_INTERSECTION;
 	} else {
 	    float t = -(r.getOrigin() * surface_normal + distance) / DdotN;
-	    t = t >= 0 ? t : 0;
+	    t = t >= 0 ? t : NO_INTERSECTION;
 	    return t;
 	}
     }
@@ -69,8 +69,8 @@ private:
 	
 	    
 public:
-    Sphere(const Vector3D& center, float r) : 
-	center(center), radius(r) {assert(radius >= 0);}
+    Sphere(const Vector3D& center, float r, const RGB& color) : 
+	SceneObject(color), center(center), radius(r) {assert(radius >= 0);}
     const Vector3D getCenter() const {return center;}
     float getRadius() const {return radius;}
     float intersection(const Ray &r) const {
