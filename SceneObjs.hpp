@@ -25,7 +25,7 @@ private:
     float distance;
     Vector3D surface_normal;
 public:
-    Plane(float dist, const Vector3D& surf_norm, const RGB& surf_color) : 
+    Plane(float dist, const Vector3D& surf_norm, const RGB& surf_color = RGB(1, 1, 1)) : 
 	SceneObject(surf_color), distance(dist), surface_normal(surf_norm) { }
     float getDistance() const {return distance;}
     const Vector3D getSurfaceNormal() const {return surface_normal;}
@@ -69,7 +69,7 @@ private:
 	
 	    
 public:
-    Sphere(const Vector3D& center, float r, const RGB& color) : 
+    Sphere(const Vector3D& center, float r, const RGB& color = RGB(1, 1, 1)) : 
 	SceneObject(color), center(center), radius(r) {assert(radius >= 0);}
     const Vector3D getCenter() const {return center;}
     float getRadius() const {return radius;}

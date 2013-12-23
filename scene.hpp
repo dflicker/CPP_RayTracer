@@ -11,6 +11,10 @@
 #include <cmath>
 #include <ostream>
 #include <iostream>
+#include <memory>
+
+typedef std::shared_ptr<SceneObject> SPSceneObject;
+typedef std::shared_ptr<Light> SPLight;
 
 struct DeleteFromVector {
     template <class T>
@@ -19,14 +23,14 @@ struct DeleteFromVector {
     }
 };
 
-struct closest_object : public std::unary_function<SceneObject*, void> {
+struct closest_object : public std::unary_function<SPSceneObject, void> {
     float closest_time;
-    SceneObject *closest_obj;
+    SPSceneObject closest_obj;
     Ray r;
     closest_object(const Ray& ray) : closest_time(std::numeric_limits<float>::max()),
 				     closest_obj(0),
 				     r(ray) { }
-    void operator()(SceneObject *obj) {
+    void operator()(SPSceneObject obj) {
 	float t = obj->intersection(r);
 	if (NO_INTERSECTION != t && t < closest_time) {
 	    closest_time = t;
@@ -37,9 +41,9 @@ struct closest_object : public std::unary_function<SceneObject*, void> {
 
 class Scene {
 private:
-    std::vector<Light *> lights;
-    std::vector<SceneObject *> objects;
-    SceneObject* findClosestObject(const Ray &r, float &tIntersect) const {
+    std::vector<SPLight> lights;
+    std::vector<SPSceneObject> objects;
+    SPSceneObject findClosestObject(const Ray &r, float &tIntersect) const {
 	closest_object result = std::for_each(objects.begin(), objects.end(),
 					      closest_object(r));
 	tIntersect = result.closest_time;
@@ -47,21 +51,18 @@ private:
     }
 public:
     Scene() : lights(0), objects(0) { }
-    ~Scene() {
-	std::for_each(lights.begin(), lights.end(), DeleteFromVector());
-	std::for_each(objects.begin(), objects.end(), DeleteFromVector());
-    }
-    void addObject(SceneObject *obj) {
+    ~Scene() { }
+    void addObject(SPSceneObject obj) {
 	assert(obj != 0);
 	objects.push_back(obj);
     }
-    void addLight(Light *light) {
+    void addLight(SPLight light) {
 	assert(light != 0);
 	lights.push_back(light);
     }
     const RGB traceRay(const Ray& r) const {
 	float closest_time;
-	SceneObject *closest_obj = findClosestObject(r, closest_time);
+	SPSceneObject closest_obj = findClosestObject(r, closest_time);
 	if (closest_time == std::numeric_limits<float>::max()) {
 	    assert(closest_obj == 0);
 	}
@@ -70,7 +71,7 @@ public:
 	}
 	Vector3D location = r.getPointAtT(closest_time);
 	RGB pixel_color(0, 0, 0);
-	for (std::vector<Light *>::const_iterator it = lights.begin(); 
+	for (std::vector<SPLight>::const_iterator it = lights.begin(); 
 	     it != lights.end(); 
 	     ++it) {
 	    Vector3D L = (*it)->getPosition() - location;
