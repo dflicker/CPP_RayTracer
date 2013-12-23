@@ -1,5 +1,8 @@
 #include "vector.hpp"
 #include "rgb.hpp"
+#include "ray.hpp"
+#include "SceneObjs.hpp"
+#include "scene.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 
@@ -255,6 +258,59 @@ TEST(TestRGB, DivideScalar) {
     EXPECT_FLOAT_EQ(u.getRed(), 1);
     EXPECT_FLOAT_EQ(u.getGreen(), 2);
     EXPECT_FLOAT_EQ(u.getBlue(), 3); 
+}
+
+TEST(TestRay, NormalizeConstructor) {
+    Vector3D org(1, 2, 3);
+    Vector3D dir(5, 6, 7);
+    Ray u(org, dir);
+    Vector3D res = u.getDirection();
+    EXPECT_FLOAT_EQ(res[0], 0.4767313);
+    EXPECT_FLOAT_EQ(res[1], 0.57207757);
+    EXPECT_FLOAT_EQ(res[2], 0.667424);
+}
+
+TEST(TestRay, NoNormalizeConstructor) {
+    Vector3D org(1, 2, 3);
+    Vector3D dir(5, 6, 7);
+    Ray u(org, dir, false);
+    Vector3D res = u.getDirection();
+    EXPECT_FLOAT_EQ(res[0], 5);
+    EXPECT_FLOAT_EQ(res[1], 6);
+    EXPECT_FLOAT_EQ(res[2], 7);
+}
+
+TEST(TestRay, PointAtT) {
+    Vector3D org(1, 2, 3);
+    Vector3D dir(5, 6, 7);
+    Ray u(org, dir, false);
+    Vector3D res = u.getPointAtT(2);
+    EXPECT_FLOAT_EQ(res[0], 11);
+    EXPECT_FLOAT_EQ(res[1], 14);
+    EXPECT_FLOAT_EQ(res[2], 17);
+}
+
+TEST(TestSceneObjs, SphereIntersectOnce) {
+    Sphere s(Vector3D(2, 0, 0), 1);
+    Ray r(Vector3D(0, 0, 0), Vector3D(1, 0, 0));
+    float t = s.intersection(r);
+    EXPECT_FLOAT_EQ(t, 1);
+    Vector3D p = r.getPointAtT(t);
+    EXPECT_FLOAT_EQ(p[0], 1);
+    EXPECT_FLOAT_EQ(p[1], 0);
+    EXPECT_FLOAT_EQ(p[2], 0);
+}
+
+TEST(TestScene, Destructor) {
+    Scene s;
+    Light *l1 = new Light(Vector3D(2, 0, 0), RGB(2, 4, 6));
+    Sphere *obj1 = new Sphere(Vector3D(2, 0, 0), 1);
+    s.addObject(obj1);
+    s.addLight(l1);
+    Light *l2 = new Light(Vector3D(2, 0, 0), RGB(2, 4, 6));
+    Sphere *obj2 = new Sphere(Vector3D(2, 0, 0), 1);   
+    s.addObject(obj2);
+    s.addLight(l2);
 }
 
 int main(int argc, char **argv) {
