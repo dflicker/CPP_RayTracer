@@ -7,8 +7,9 @@ Implemented to learn more about C++ and the STL. Used Donnie Pinkston's CS11 Adv
 
 Requirements
 ============
-* Recent GCC versions that supprts C++11
+* Recent GCC version that supports C++11
 * Unix-like OS
+* Google Test (for optional unit tests)
 
 Use
 ===
