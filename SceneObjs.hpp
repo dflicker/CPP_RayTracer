@@ -11,16 +11,17 @@ const static float NO_INTERSECTION = -1;
 class SceneObject {
 protected:
     RGB surface_color;
+    float reflectivity;
     
 public:
     SceneObject() : surface_color(0.5, 0.5, 0.5) { }
-    SceneObject(RGB surf_color) : surface_color(surf_color) { }
+    SceneObject(RGB surf_color, float reflect = 0) : surface_color(surf_color), reflectivity(reflect) { }
     const RGB getSurfaceColor() const {return surface_color;}
+    const float getReflectivity() const {return reflectivity;}
     void setSurfaceColor(const RGB new_color) {surface_color = new_color;}
     virtual float intersection(const Ray &r) const = 0;
     virtual Vector3D surfaceNormal(const Vector3D& point) const = 0;
     const RGB pointColor(const Vector3D &surface_point) const {return surface_color;}
-    
     virtual ~SceneObject() { }
 };
 
@@ -29,8 +30,8 @@ private:
     float distance;
     Vector3D surface_normal;
 public:
-    Plane(float dist, const Vector3D& surf_norm, const RGB& surf_color = RGB(1, 1, 1)) : 
-	SceneObject(surf_color), distance(dist), surface_normal(surf_norm) { }
+    Plane(float dist, const Vector3D& surf_norm, const RGB& surf_color = RGB(1, 1, 1), float reflect = 0) : 
+	SceneObject(surf_color, reflect), distance(dist), surface_normal(surf_norm) { }
     float getDistance() const {return distance;}
     const Vector3D getSurfaceNormal() const {return surface_normal;}
     float intersection(const Ray &r) const {
@@ -51,10 +52,12 @@ std::istream& operator>>(std::istream &in, Plane &pl) {
     Vector3D surf_norm;
     float dist;
     RGB col;
-    in >> surf_norm >> dist >> col;
+    float reflect;
+    in >> surf_norm >> dist >> col >> reflect;
     pl.distance = dist;
     pl.surface_normal = surf_norm;
     pl.surface_color = col;
+    pl.reflectivity = reflect;
     return in;
 }
 
@@ -85,8 +88,8 @@ private:
 	
 	    
 public:
-    Sphere(const Vector3D& center, float r, const RGB& color = RGB(1, 1, 1)) : 
-	SceneObject(color), center(center), radius(r) {assert(radius >= 0);}
+    Sphere(const Vector3D& center, float r, const RGB& color = RGB(1, 1, 1), float reflect = 0) : 
+	SceneObject(color, reflect), center(center), radius(r) {assert(radius >= 0);}
     const Vector3D getCenter() const {return center;}
     float getRadius() const {return radius;}
     float intersection(const Ray &r) const {
@@ -106,10 +109,12 @@ std::istream& operator>>(std::istream &in, Sphere &s) {
     Vector3D center;
     float r;
     RGB col;
-    in >> center >> r >> col;
+    float reflect;
+    in >> center >> r >> col >> reflect;
     s.center = center;
     s.radius = r;
     s.surface_color = col;
+    s.reflectivity = reflect;
     return in;
 }
 

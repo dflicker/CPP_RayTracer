@@ -18,6 +18,11 @@ public:
 	assert(t >= 0);
 	return origin + direction * t;
     }
+    const Ray reflect(const Vector3D &pos, const Vector3D &normal, float delta = 0.00001) const {
+	Vector3D Dpar = (-direction).projectOnto(normal);
+	Vector3D Dr = direction + 2 * Dpar;
+	return Ray(pos + Dr * delta, Dr);
+    }
 };
 
 

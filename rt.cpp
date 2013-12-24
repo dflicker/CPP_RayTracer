@@ -42,6 +42,6 @@ int main(int argc, char **argv) {
     }
     else
 	reader.readScene(std::cin, cam, scene);
-    scene.render(cam, 600, std::cout);
+    scene.render(cam, 1000, std::cout);
     return 0;
 }

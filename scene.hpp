@@ -15,6 +15,8 @@
 #include <istream>
 #include <sstream>
 
+const static int MAX_REFLECT_DEPTH = 10;
+
 typedef std::shared_ptr<SceneObject> SPSceneObject;
 typedef std::shared_ptr<Light> SPLight;
 	
@@ -55,7 +57,7 @@ public:
 	assert(light != 0);
 	lights.push_back(light);
     }
-    const RGB traceRay(const Ray& r) const {
+    const RGB traceRay(const Ray& r, int depth = 0) const {
 	float closest_time;
 	SPSceneObject closest_obj = findClosestObject(r, closest_time);
 	if (closest_time == std::numeric_limits<float>::max()) {
@@ -74,7 +76,12 @@ public:
 	    Vector3D N = closest_obj->surfaceNormal(location);
 	    pixel_color += (*it)->getColor() * closest_obj->pointColor(location) 
 		* fmaxf(N * L, 0);
-	}	    
+	}
+	if (depth < MAX_REFLECT_DEPTH && closest_obj->getReflectivity() > 0) {
+	    Ray reflected_ray = r.reflect(location, closest_obj->surfaceNormal(location));
+	    RGB reflection_color = traceRay(reflected_ray, depth + 1);
+	    pixel_color += closest_obj->getReflectivity() * reflection_color;
+	}
 	return pixel_color;
     }
     void render(const Camera& cam, int imgSize, std::ostream& out) {

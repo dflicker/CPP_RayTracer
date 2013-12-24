@@ -102,6 +102,9 @@ public:
     friend std::ostream& operator<<(std::ostream &out, Vector3D &vec);
     friend std::istream& operator>>(std::istream &in, Vector3D &vec);
     friend const Vector3D operator*(const float scalar, const Vector3D &vec);
+    const Vector3D projectOnto(const Vector3D &vec) const {
+	return vec * (((*this) * vec) / (vec * vec));
+    }
 };
 
 std::ostream& operator<<(std::ostream &out, Vector3D &vec) {
