@@ -15,6 +15,7 @@
 typedef std::shared_ptr<SceneObject> SPSceneObject;
 typedef std::shared_ptr<Plane> SPPlane;
 typedef std::shared_ptr<Sphere> SPSphere;
+typedef std::shared_ptr<Cylinder> SPCylinder;
 typedef std::shared_ptr<Light> SPLight;
 typedef std::shared_ptr<Camera> SPCamera;
 // Define a type for functions that take an input-stream, and construct a
@@ -34,6 +35,12 @@ SPSceneObject ReadSphere(std::istream &in) {
     return s;
 }
 
+SPSceneObject ReadCylinder(std::istream &in) {
+    SPCylinder c(new Cylinder(Vector3D(-1.2, 1, 0), Vector3D(0, 1, 0), 1, 1));
+    in >> (*c);
+    return c;
+}
+
 SPLight ReadLight(std::istream &in) {
     SPLight l(new Light(Vector3D(5, 3, 5), RGB(0.3, 0.3, 0.3)));
     in >> (*l);
@@ -47,6 +54,7 @@ public:
     SceneReader() {
 	readFuncs["plane"] = ReadPlane;
 	readFuncs["sphere"] = ReadSphere;
+	readFuncs["cylinder"] = ReadCylinder;
     }
     bool readScene(std::istream &in, Camera& cam, Scene& scene) {
 	std::string line;

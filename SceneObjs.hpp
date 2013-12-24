@@ -65,6 +65,7 @@ class Sphere : public SceneObject {
 private:
     Vector3D center;
     float radius;
+public:
     int getIntersection(const Ray &r, float &t1, float &t2) const {
 	int num_intersects = 0;
 	float a = r.getDirection() * r.getDirection();
@@ -85,9 +86,6 @@ private:
 	if (t2 >= 0) num_intersects++;
 	return num_intersects;
     }
-	
-	    
-public:
     Sphere(const Vector3D& center, float r, const RGB& color = RGB(1, 1, 1), float reflect = 0) : 
 	SceneObject(color, reflect), center(center), radius(r) {assert(radius >= 0);}
     const Vector3D getCenter() const {return center;}
@@ -117,5 +115,73 @@ std::istream& operator>>(std::istream &in, Sphere &s) {
     s.reflectivity = reflect;
     return in;
 }
+
+class Cylinder : public SceneObject {
+private:
+    Vector3D pos;
+    Vector3D orientation;
+    float radius;
+    float height;
+public:
+    Cylinder(const Vector3D& center, const Vector3D& orient, float r, float h, const RGB& color = RGB(1, 1, 1), float reflect = 0) : 
+	SceneObject(color, reflect), pos(center), orientation(orient), radius(r), height(h) {assert(radius >= 0); orientation.normalize();}
+    float intersection(const Ray &r) const {
+	Vector3D Cpar = pos.projectOnto(orientation);
+	Vector3D Cperp = pos - Cpar;
+	
+	Vector3D Ppar = r.getOrigin().projectOnto(orientation);
+	Vector3D Pperp = r.getOrigin() - Ppar;
+
+	assert(r.getDirection().magSquared() - 1 < .1 || r.getDirection().magSquared() - 1 > -.1);
+	Vector3D Dpar = r.getDirection().projectOnto(orientation);
+	Vector3D Dperp = r.getDirection() - Dpar;
+
+	Ray sphere_ray(Pperp, Dperp, false);
+	Sphere equiv_sphere(Cperp, radius);
+	float t1;
+	float t2;
+	int num_points = equiv_sphere.getIntersection(sphere_ray, t1, t2);
+	if (num_points > 0) {
+	    Vector3D test_vec = Ppar + Dpar * t1 - Cpar;
+	    if (test_vec.mag() < height / 2)
+		return t1;
+	}
+	if (num_points > 1) {
+	    assert(t2 != NO_INTERSECTION);
+	    Vector3D test_vec = Ppar + Dpar * t2 - Cpar;
+	    if (test_vec.mag() < height / 2)
+		return t2;
+	}
+	return NO_INTERSECTION;
+    }
+    Vector3D surfaceNormal(const Vector3D& point) const {
+	Vector3D V = point - pos;
+	Vector3D Vperp = V - V.projectOnto(orientation);
+	Vperp.normalize();
+	assert(Vperp.magSquared() - 1 < .1 || Vperp.magSquared() - 1 > -.1);
+	return Vperp;
+    }
+
+    friend std::istream& operator>>(std::istream &in, Cylinder &c);
+};
+
+std::istream& operator>>(std::istream &in, Cylinder &c) {
+    Vector3D center;
+    Vector3D orient;
+    float r;
+    float h;
+    RGB col;
+    float reflect;
+    in >> center >> orient >> r >> h >> col >> reflect;
+    c.pos = center;
+    c.orientation = orient;
+    c.orientation.normalize();
+    c.radius = r;
+    c.height = h;
+    c.surface_color = col;
+    c.reflectivity = reflect;
+    return in;
+}
+
 
 #endif // __SCENEOBJS_HPP_

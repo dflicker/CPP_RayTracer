@@ -20,17 +20,14 @@ int main(int argc, char **argv) {
     bool use_file = false;
     std::string flag;
     std::string filename;
-    if (!(argc == 1 || argc == 3)) {
-	std::cout << "Usage: " << argv[0] << " [-f filename]" << std::endl;
-	return 1;
-    }
-    if (argc == 3) {
-	flag = std::string(argv[1]);
+    int imgSize = atoi(argv[1]);
+    if (argc == 4) {
+	flag = std::string(argv[2]);
 	if (flag != "-f") {
 	    std::cout << "Usage: " << argv[0] << " [-f filename]" << std::endl;
 	    return 1;
 	}
-	filename = std::string(argv[2]);
+	filename = std::string(argv[3]);
 	use_file = true;
     }
     Scene scene;
@@ -42,6 +39,6 @@ int main(int argc, char **argv) {
     }
     else
 	reader.readScene(std::cin, cam, scene);
-    scene.render(cam, 1000, std::cout);
+    scene.render(cam, imgSize, std::cout);
     return 0;
 }
