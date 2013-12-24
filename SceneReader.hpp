@@ -64,7 +64,7 @@ public:
 		scene.addLight(newLight);
 	    } else if (type == "camera") {
 		is >> cam;
-	    } else if (type == ""){
+	    } else if (type == "" || type == "#" || type == "//") {
 		continue;
 	    } else {
 		return false;
