@@ -10,19 +10,12 @@ private:
     Vector3D direction;
 
 public:
-    Ray(const Vector3D &orig, const Vector3D &dir, bool normalize = true) : 
-	origin(orig), direction(dir) {if (normalize) direction.normalize();}
-    const Vector3D getOrigin() const {return origin;}
-    const Vector3D getDirection() const {return direction;}
-    const Vector3D getPointAtT(float t) const {
-	assert(t >= 0);
-	return origin + direction * t;
-    }
-    const Ray reflect(const Vector3D &pos, const Vector3D &normal, float delta = 0.00001) const {
-	Vector3D Dpar = (-direction).projectOnto(normal);
-	Vector3D Dr = direction + 2 * Dpar;
-	return Ray(pos + Dr * delta, Dr);
-    }
+    Ray(const Vector3D &orig, const Vector3D &dir, bool normalize = true);
+    const Vector3D getOrigin() const;
+    const Vector3D getDirection() const;
+    const Vector3D getPointAtT(float t) const;
+    const Ray reflect(const Vector3D &pos, const Vector3D &normal, 
+		      float delta = 0.00001) const;
 };
 
 
