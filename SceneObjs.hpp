@@ -1,12 +1,15 @@
 #ifndef __SCENEOBJS_HPP_
 #define __SCENEOBJS_HPP_
 #include "rgb.hpp"
+#include "ray.hpp"
+#include "vector.hpp"
 #include <cmath>
+#include <istream>
 
 const static float NO_INTERSECTION = -1;
 
 class SceneObject {
-private:
+protected:
     RGB surface_color;
     
 public:
@@ -17,6 +20,7 @@ public:
     virtual float intersection(const Ray &r) const = 0;
     virtual Vector3D surfaceNormal(const Vector3D& point) const = 0;
     const RGB pointColor(const Vector3D &surface_point) const {return surface_color;}
+    
     virtual ~SceneObject() { }
 };
 
@@ -40,7 +44,19 @@ public:
 	}
     }
     Vector3D surfaceNormal(const Vector3D& point) const {return surface_normal;}
+    friend std::istream& operator>>(std::istream &in, Plane &pl);
 };
+
+std::istream& operator>>(std::istream &in, Plane &pl) {
+    Vector3D surf_norm;
+    float dist;
+    RGB col;
+    in >> surf_norm >> dist >> col;
+    pl.distance = dist;
+    pl.surface_normal = surf_norm;
+    pl.surface_color = col;
+    return in;
+}
 
 class Sphere : public SceneObject {
 private:
@@ -83,6 +99,18 @@ public:
 	res.normalize();
 	return res;
     }
+    friend std::istream& operator>>(std::istream &in, Sphere &s);
 };
+
+std::istream& operator>>(std::istream &in, Sphere &s) {
+    Vector3D center;
+    float r;
+    RGB col;
+    in >> center >> r >> col;
+    s.center = center;
+    s.radius = r;
+    s.surface_color = col;
+    return in;
+}
 
 #endif // __SCENEOBJS_HPP_

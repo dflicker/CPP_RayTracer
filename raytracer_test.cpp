@@ -301,18 +301,6 @@ TEST(TestSceneObjs, SphereIntersectOnce) {
     EXPECT_FLOAT_EQ(p[2], 0);
 }
 
-TEST(TestScene, Destructor) {
-    Scene s;
-    Light *l1 = new Light(Vector3D(2, 0, 0), RGB(2, 4, 6));
-    Sphere *obj1 = new Sphere(Vector3D(2, 0, 0), 1);
-    s.addObject(obj1);
-    s.addLight(l1);
-    Light *l2 = new Light(Vector3D(2, 0, 0), RGB(2, 4, 6));
-    Sphere *obj2 = new Sphere(Vector3D(2, 0, 0), 1);   
-    s.addObject(obj2);
-    s.addLight(l2);
-}
-
 int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -2,8 +2,10 @@
 #define __VECTOR_HPP_
 
 #include <ostream>
+#include <istream>
 #include <cassert>
 #include <cmath>
+#include <ios>
 
 class Vector3D {
 private:
@@ -98,6 +100,7 @@ public:
 	*this /= this->mag();
     }
     friend std::ostream& operator<<(std::ostream &out, Vector3D &vec);
+    friend std::istream& operator>>(std::istream &in, Vector3D &vec);
     friend const Vector3D operator*(const float scalar, const Vector3D &vec);
 };
 
@@ -105,6 +108,30 @@ std::ostream& operator<<(std::ostream &out, Vector3D &vec) {
     out << "(" << vec.vals[0] << ", " << vec.vals[1] << ", " << vec.vals[2] << ")";
     return out;
 }
+
+std::istream& operator>>(std::istream &in, Vector3D &vec) {
+    char ch = 0;
+    float val = 0;
+    if (!in)
+	return in;
+    in >> ch;
+    if (ch != '(') {
+	in.clear(std::ios_base::failbit);
+	return in;
+    }
+    for (int i = 0; i < 3; i++) {
+	in >> val >> ch;
+	if (ch == ',')
+	    vec[i] = val;
+    }
+    if (ch != ')') {
+	in.clear(std::ios_base::failbit);
+	return in;
+    }
+    vec[2] = val;
+    return in;
+}
+	
 
 const Vector3D operator*(const float scalar, const Vector3D &vec) {return vec * scalar;}
 

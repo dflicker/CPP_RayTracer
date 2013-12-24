@@ -1,9 +1,9 @@
 #ifndef __CAMERA_HPP_
 #define __CAMERA_HPP_
 
-// #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cassert>
+#include <istream>
 
 class Camera {
 private:
@@ -32,6 +32,16 @@ public:
 	Ray pixelRay(loc, pixelDir);
 	return pixelRay;
     }
+    friend std::istream& operator>>(std::istream& in, Camera& cam);
 };
+
+std::istream& operator>>(std::istream& in, Camera& cam) {
+    Vector3D p;
+    Vector3D look;
+    Vector3D u;
+    in >> p >> look >> u;
+    cam = Camera(p, look, u);
+    return in;
+}
 
 #endif // __CAMERA_HPP_

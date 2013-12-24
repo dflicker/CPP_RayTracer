@@ -12,17 +12,12 @@
 #include <ostream>
 #include <iostream>
 #include <memory>
+#include <istream>
+#include <sstream>
 
 typedef std::shared_ptr<SceneObject> SPSceneObject;
 typedef std::shared_ptr<Light> SPLight;
-
-struct DeleteFromVector {
-    template <class T>
-    void operator() (T *ptr) const {
-	delete ptr;
-    }
-};
-
+	
 struct closest_object : public std::unary_function<SPSceneObject, void> {
     float closest_time;
     SPSceneObject closest_obj;
@@ -96,5 +91,7 @@ public:
 	}
     }
 };
+
+
 
 #endif // __SCENE_HPP_
